@@ -1,0 +1,77 @@
+0.9.2
+
+- Implemented Giuseppe Ottaviano's improvement to the broadword
+  algorithm for select.
+
+0.9.1
+
+- Fixed major bug in Elias-Fano implementation (the upper-bits array
+  wasn't zeroed).
+
+0.9
+
+- Improved bit extraction.
+
+- Now the simple structure for selection interleaves first-level and
+  second-level inventories to reduce cache misses.
+
+- We now use a slightly improved version of Gog & Petri's select-in-a-word.
+
+- Replaced horrendous linear congruential generator with top-quality
+  xorshift1024* generator in testranksel.cpp.
+
+- The maximum number of longwords per subinventory in simple_select is
+  now a mandatory parameter, rather than a #define. This should avoid
+  people thinking that simple_select cannot trade off space for speed.
+
+0.8
+
+- New elementary simple_rank structure, useful for testing space/speed
+  tradeoffs.
+
+- We now heavily use gcc's built-in functions __builtin_popcountll(),
+  __builtin_clzll() and __builtin_ctzll(), which map to single
+  instructions for population counting, counting the number of leading
+  zeroes and counting the number of trailing zeroes. Please compile with
+  -msse4.2 using a recent gcc (4.7+). The speed improvement is impressive.
+
+- The broadword algorithm for selection has been modified following the
+  idea used by Simon Gog in its SDSL library, that is, replacing the
+  second part (ranking in a byte) using a table lookup. Now it's twice
+  as fast.
+
+0.7
+
+- Fixed minor bug in simple_select in the case of zero-length bit vectors, and
+  wrong assertion (the code was right, the assert was wrong). Thanks to Jeffrey
+  Sorensen for reporting these bugs.
+
+0.6
+
+- Fixed pernicious bug in select 9.
+
+0.5
+
+- Faster basic operation: some broadword operation were implemented in a redundant
+  way.
+
+- New implementation for balanced parentheses.
+
+0.4
+
+- Fixed bug in simple_select_zero: under certain conditions, an error in
+  counting zeroes was causing a out-of-bounds array access.
+
+0.3
+
+- Renamed some classes to adjuct to Sux4J.
+
+- More precise bound for Elias-Fano representations.
+
+0.2
+
+- New structures for sparse arrays, and new select implementations.
+
+0.1
+
+- First release.

@@ -1,0 +1,77 @@
+Welcome to the C++ part of the sux project.
+
+We provide two implementations of rank/select queries for bit arrays of up
+to 2^64 bits. The constructor requires a pointer to a uint_64 array and
+a number of bits, and a parameter trading off space versus speed in the
+case of simple_select. The classes provide obvious rank/select methods.
+Please see my paper "Broadword Implementation of Rank/Select Queries"
+for details about the implementations.
+
+We also provide an implementation of Jacobson's balanced parentheses data
+structure. Please see my paper "Broadword Implementation of Parenthesis
+Queries" for details about the implementations.
+
+- rank9sel.cpp/rank9sel.h use rank9 as basic structure and add on top
+  select9 (+25%-+37.5% depending on data) which provides constant time
+  selection using further broadword techniques.
+
+- simple_select.cpp/simple_select.h uses broadword bit search to implement
+  a very efficient selection structure that on uniformly distributed
+  arrays uses very little additional space and is very fast.
+  simple_select_zero.cpp does the same for selecting zeroes. Note that by
+  playing with the parameter max_log2_longwords_per_subinventory you can
+  trade off space for speed. At 0, space overhead is ~3%. At 3, it is
+  about ~12% but queries are almost twice faster.
+
+- elias_fano.cpp/elias_fano.h implements an opportunistic data structure:
+  the original bit array is not required. It uses simple_select_half--a data
+  structure identical to simple_select but with constants hardwired for
+  density 1/2.
+
+- jacobson.cpp/jacobson.h implements Jacobson's o(n) constant-time rank
+  structure.
+
+Since version 0.8, we heavily use gcc's built-in functions
+__builtin_popcountll(), __builtin_clzll() and __builtin_ctzll(), which map
+to single instructions for population counting, counting the number of
+leading zeroes and counting the number of trailing zeroes. Please compile
+with -msse4.2 using a recent gcc. The improvements in speed, in particular
+for structures depending on bit search, are impressive.
+
+By defining some symbols you can conditionally compile different behaviours:
+
+- RANKPOPCOUNT in rank9.cpp will use popcounts for ranking instead of
+  broadword algorithms;
+
+- RANKPOPCOUNT2 in rank9.cpp will use *unrolled* popcounts;
+
+- SELPOPCOUNT will use popcounts for selection instead of broadword algorithms;
+
+- bal_paren.cpp/bal_paren.h implements Jacobson's o(n) constant-time rank
+  structure. In that case, SLOW_NO_TABS compiles in for-loop instead of
+  broadword implementations.
+
+All classes are heavily asserted. For testing speed, remember to use
+-DNDEBUG.
+
+The files testcount64.cpp and testselect64.cpp provide testing in
+isolation for rank/select techniques inside a word. testranksel.cpp can be
+compiled with more or less any structure by defining CLASS to the
+structure name, and MAX_LOG2_LONGWORDS_PER_SUBINVENTORY if CLASS is
+simple_select; it provides testing of rank/select primitives (please see
+the makefile). Beside the number of bits, you can provide one or two
+probabilities. Bits will be set to one with the given probability in the
+first half of the test array, and with the second probability in the
+second half (if no second probability is specified, it is assumed to be
+equal to the first one). This setup is necessary to show the slow
+behaviour of naive implementations on half-almost-empty-half-almost-full
+arrays.
+
+testbalparen.cpp tests the speed of finding a matching close parenthesis,
+and requires the number of parentheses in the test string. By providing an
+additional twist between 0 and 1 you can skew the string distribution
+towards strings with deeper nestings (1 means no twist).
+
+Enjoy,
+
+					seba (vigna@acm.org)
